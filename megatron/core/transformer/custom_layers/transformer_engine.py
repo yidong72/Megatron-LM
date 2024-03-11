@@ -457,6 +457,10 @@ class TEDotProductAttention(te.pytorch.DotProductAttention):
 
         if self.config.apply_rope_fusion and qkv_format == 'bshd':
             query, key, value = [x.transpose(0, 1).contiguous() for x in (query, key, value)]
+        
+        new_value = torch.zeros_like(key)
+        new_value[:] = value
+        value = new_value
 
         if self.te_forward_mask_type:
             core_attn_out = super().forward(
